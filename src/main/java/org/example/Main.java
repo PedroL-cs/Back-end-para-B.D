@@ -31,6 +31,9 @@ public class Main {
                     case 1:
                         consultarDados(connection, dado);
                         break;
+                    case 2:
+                        adicionarDados(connection, dado);
+                        break;
                     case 5:
                         running = false;
                         try {
@@ -90,6 +93,125 @@ public class Main {
                 break;
             default:
                 System.out.println("Opção inválida! Por favor tente novamente com um valor válido");
+                break;
+        }
+    }
+
+    private static void adicionarDados(Connection connection, Scanner dado) {
+        System.out.println("O que você deseja fazer?");
+        System.out.println("1. Adicionar coluna numa tabela existente");
+        System.out.println("2. Criar uma nova tabela");
+        int escolha = dado.nextInt();
+        dado.nextLine();
+
+        switch (escolha) {
+            case 1:
+                listarTabelas(connection);
+                System.out.println("Por favor, informe a tabela que receberá uma nova coluna");
+                String tabelaNome = dado.nextLine().trim();
+
+                System.out.println("Informe o nome da nova coluna:");
+                String nomeColuna = dado.nextLine();
+
+                System.out.println("Agora escolha o tipo de dado que a coluna receberá:");
+                System.out.println("Exemplos: INT, VARCHAR, DATE");
+                String tipoColuna = dado.nextLine().toUpperCase().trim();
+
+                // pede tamanho da variável caso seja do tipo varchar
+                int tamanhoColuna = 0;
+                if (tipoColuna.equals("VARCHAR")) {
+                    System.out.println("Informe o tamanho para VARCHAR:");
+                    tamanhoColuna = dado.nextInt();
+                    dado.nextLine();
+                }
+
+                boolean autoIncremento = false;
+                if (tipoColuna.equals("INT")) {
+                    System.out.println("Essa coluna deverá ser auto incrementada? (sim / não");
+                    autoIncremento = dado.nextLine().equalsIgnoreCase("sim");
+                }
+
+                System.out.println("Informe agora o tipo de chave (deixe em branco se for o caso)");
+                System.out.println("Opções: PRIMARY , UNIQUE , FOREIGN");
+                String chaveTipo = dado.nextLine().toUpperCase();
+
+                boolean chaveEstrangeira = false;
+                String tabelaReferencia = "";
+                String colunaReferencia = "";
+                if (chaveTipo.equals("FOREIGN")) {
+                    System.out.println("Chave selecionada: FOREIGN");
+
+                    System.out.println("Informe o nome da tabela de referência:");
+                    listarTabelas(connection);
+                    tabelaReferencia = dado.nextLine().toUpperCase().trim();
+
+                    System.out.println("Informe o nome da coluna de referência");
+                    listarColunas(connection, tabelaReferencia);
+                    colunaReferencia = dado.nextLine().toUpperCase().trim();
+                }
+
+                DatabaseAdicao.adicionarColuna(connection, tabelaNome, nomeColuna, tipoColuna, tamanhoColuna, autoIncremento, chaveTipo, tabelaReferencia, colunaReferencia);
+                break;
+            case 2:
+                System.out.println("Por favor, informe o nome da nova tabela");
+                tabelaNome = dado.nextLine();
+                DatabaseAdicao.adicionarTabela(connection, tabelaNome);
+
+                boolean adicionarColunas = true;
+                while (adicionarColunas) {
+                    System.out.println("Você deseja adicionar uma nova coluna? (sim / não)");
+                    String resposta = dado.nextLine().trim().toLowerCase();
+                    if (resposta.equals("não")) {
+                        adicionarColunas = false;
+                        break;
+                    }
+
+                    System.out.println("Informe o nome da nova coluna:");
+                    nomeColuna = dado.nextLine();
+
+                    System.out.println("Agora escolha o tipo de dado que a coluna receberá:");
+                    System.out.println("Exemplos: INT, VARCHAR, DATE");
+                    tipoColuna = dado.nextLine().toUpperCase().trim();
+
+                    // pede tamanho da variável caso seja do tipo varchar
+                    tamanhoColuna = 0;
+                    if (tipoColuna.equals("VARCHAR")) {
+                        System.out.println("Informe o tamanho para VARCHAR:");
+                        tamanhoColuna = dado.nextInt();
+                        dado.nextLine();
+                    }
+
+                    autoIncremento = false;
+                    if (tipoColuna.equals("INT")) {
+                        System.out.println("Essa coluna deverá ser auto incrementada? (sim / não");
+                        autoIncremento = dado.nextLine().equalsIgnoreCase("sim");
+                    }
+
+                    System.out.println("Informe agora o tipo de chave (deixe em branco se for o caso)");
+                    System.out.println("Opções: PRIMARY , UNIQUE , FOREIGN");
+                    chaveTipo = dado.nextLine().trim().toUpperCase();
+
+                    chaveEstrangeira = false;
+                    tabelaReferencia = "";
+                    colunaReferencia = "";
+                    if (chaveTipo.equals("FOREIGN")) {
+                        System.out.println("Chave selecionada: FOREIGN");
+
+
+                        System.out.println("Informe o nome da tabela de referência:");
+                        listarTabelas(connection);
+                        tabelaReferencia = dado.nextLine().toUpperCase().trim();
+
+                        System.out.println("Informe o nome da coluna de referência");
+                        listarColunas(connection, tabelaReferencia);
+                        colunaReferencia = dado.nextLine().toUpperCase().trim();
+                    }
+
+                    DatabaseAdicao.adicionarColuna(connection, tabelaNome, nomeColuna, tipoColuna, tamanhoColuna, autoIncremento, chaveTipo, tabelaReferencia, colunaReferencia);
+                }
+                break;
+            default:
+                System.out.println("Opção inválida");
                 break;
         }
     }
