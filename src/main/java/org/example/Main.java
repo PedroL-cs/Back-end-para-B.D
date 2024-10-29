@@ -34,6 +34,9 @@ public class Main {
                     case 2:
                         adicionarDados(connection, dado);
                         break;
+                    case 4:
+                        // excluirDados(connection, dado);
+                        break;
                     case 5:
                         running = false;
                         try {
@@ -57,10 +60,17 @@ public class Main {
 
     private static void consultarDados(Connection connection, Scanner dado) {
         System.out.println("O que você deseja fazer?");
-        System.out.println("1. Consultar coluna de uma tabela");
-        System.out.println("2. Consultar uma tabela inteira");
+        System.out.println("1. Consultar registros específicos de uma tabela");
+        System.out.println("2. Consultar dados de colunas selecionadas de uma tabela");
+        System.out.println("3. Visualizar todos os registros de uma tabela");
+
         int escolha = dado.nextInt();
         dado.nextLine();
+
+        if (escolha < 1 || escolha > 3) {
+            System.out.println("Opção inválida! Por favor tente novamente com um valor válido.");
+            return;
+        }
 
         switch (escolha) {
             case 1:
@@ -68,28 +78,97 @@ public class Main {
                 System.out.println("Informe o nome da tabela desejada:");
                 String tabelaNome = dado.nextLine();
 
+                if (tabelaNome.equalsIgnoreCase("projeto")) {
+                    System.out.println("Qual será a condição de consulta?");
+                    System.out.println("1. Nenhuma");
+                    System.out.println("2. Consultar por projetos concluídos");
+                    System.out.println("3. Consultar por projetos pendentes");
+                    System.out.println("4. Consultar projetos por data de início");
+                    System.out.println("5. Consultar projetos por data de conclusão");
+                    System.out.println("6. Consultar projetos com mais de X pessoas");
+
+                    int escolha2 = dado.nextInt();
+                    dado.nextLine();
+
+                    switch (escolha2) {
+                        case 1:
+                            DatabaseConsulta.consultarTabela(connection, tabelaNome);
+                            break;
+                        case 2:
+                            DatabaseConsulta.consultarTabelaPorStatus(connection, tabelaNome, 2);
+                            break;
+                        case 3:
+                            DatabaseConsulta.consultarTabelaPorStatus(connection, tabelaNome, 3);
+                            break;
+                        case 4:
+                            System.out.println("Informe por favor a data de preferência (YYYY-MM-DD)");
+                            String data = dado.nextLine();
+
+                            DatabaseConsulta.consultarTabelaPorData(connection, tabelaNome, 4, data);
+                            break;
+                        case 5:
+                            System.out.println("Informe por favor a data de preferência (YYYY-MM-DD)");
+                            data = dado.nextLine();
+
+                            DatabaseConsulta.consultarTabelaPorData(connection, tabelaNome, 5, data);
+                            break;
+                        case 6:
+                            System.out.println("Informe o número mínimo de pessoas para consulta");
+                            int numPessoas = dado.nextInt();
+
+                            DatabaseConsulta.consultarTabelaPorNumPessoas(connection, tabelaNome, numPessoas);
+                            break;
+                    }
+
+                } else if (tabelaNome.equalsIgnoreCase("tarefa")) {
+                    System.out.println("Qual será a condição de consulta?");
+                    System.out.println("1. Nenhuma");
+                    System.out.println("2. Consultar por tarefas concluídos");
+                    System.out.println("3. Consultar por tarefas pendentes");
+                    System.out.println("4. Consultar tarefas por projeto associado (nome)");
+                    int escolha2 = dado.nextInt();
+                    dado.nextLine();
+
+                    switch (escolha2) {
+                        case 1:
+                            DatabaseConsulta.consultarTabela(connection, tabelaNome);
+                            break;
+                        case 2:
+                            DatabaseConsulta.consultarTabelaPorStatus(connection, tabelaNome, 2);
+                            break;
+                        case 3:
+                            DatabaseConsulta.consultarTabelaPorStatus(connection, tabelaNome, 3);
+                            break;
+                        case 4:
+                            DatabaseConsulta.consultarColuna(connection, "Projeto", "nomeProjeto");
+                            System.out.println("Informe qual projeto será usado como condição de consulta");
+                            String nomeProjeto = dado.nextLine();
+
+                            DatabaseConsulta.consultarTabelaPorProjeto(connection, tabelaNome, nomeProjeto);
+                            break;
+                    }
+                }
+
+                break;
+            case 2:
+                listarTabelas(connection);
+                System.out.println("Informe o nome da tabela desejada:");
+                tabelaNome = dado.nextLine();
+
                 listarColunas(connection, tabelaNome);
                 System.out.println("Informe agora o nome das colunas desejadas (em caso de múltiplas colunas, separe-as por vírgula) :");
                 String colunas = dado.nextLine();
 
-                System.out.println("Deseja aplicar alguma condição? (Ex: status = 'Pendente') (Deixe em branco em caso de nenhuma condição) (em caso de múltiplas condições, separe-as por vírgula)");
-                String condicaoColuna = dado.nextLine();
-                String[] condicoesColuna = condicaoColuna.split(",");
-
                 System.out.println();
-                DatabaseConsulta.consultarColuna(connection, tabelaNome, colunas, condicoesColuna);
+                DatabaseConsulta.consultarColuna(connection, tabelaNome, colunas);
                 break;
-            case 2:
+            case 3:
                 listarTabelas(connection);
                 System.out.println("Informe o nome da tabela:");
                 tabelaNome = dado.nextLine();
 
-                System.out.println("Deseja aplicar alguma condição? (Ex: status = 'Concluído') (Deixe em branco em caso de nenhuma condição) (em caso de múltiplas condições, separe-as por vírgula)");
-                String condicaoTabela = dado.nextLine();
-                String[] condicoesTabela = condicaoTabela.split(",");
-
                 System.out.println();
-                DatabaseConsulta.consultarTabela(connection, tabelaNome, condicoesTabela);
+                DatabaseConsulta.consultarTabela(connection, tabelaNome);
                 break;
             default:
                 System.out.println("Opção inválida! Por favor tente novamente com um valor válido");
