@@ -178,16 +178,32 @@ public class Main {
 
     private static void adicionarDados(Connection connection, Scanner dado) {
         System.out.println("O que você deseja fazer?");
-        System.out.println("1. Adicionar coluna numa tabela existente");
-        System.out.println("2. Criar uma nova tabela");
+        System.out.println("1. Adicionar novo registro numa tabela");
+        System.out.println("2. Adicionar coluna numa tabela existente");
+        System.out.println("3. Criar uma nova tabela");
         int escolha = dado.nextInt();
         dado.nextLine();
 
         switch (escolha) {
             case 1:
                 listarTabelas(connection);
+                System.out.println("Informe qual tabela receberá um novo registro");
+                String tabelaNome = dado.nextLine();
+
+                if (tabelaNome.equalsIgnoreCase("projeto")) {
+                    DatabaseAdicao.adicionarProjeto(connection, dado);
+                } else if (tabelaNome.equalsIgnoreCase("tarefa")) {
+                    DatabaseAdicao.adicionarTarefa(connection, dado);
+                } else {
+                    System.out.println("A tabela informada não foi encontrada ou não existe");
+                    return;
+                }
+                break;
+
+            case 2:
+                listarTabelas(connection);
                 System.out.println("Por favor, informe a tabela que receberá uma nova coluna");
-                String tabelaNome = dado.nextLine().trim();
+                tabelaNome = dado.nextLine().trim();
 
                 System.out.println("Informe o nome da nova coluna:");
                 String nomeColuna = dado.nextLine();
@@ -231,7 +247,7 @@ public class Main {
 
                 DatabaseAdicao.adicionarColuna(connection, tabelaNome, nomeColuna, tipoColuna, tamanhoColuna, autoIncremento, chaveTipo, tabelaReferencia, colunaReferencia);
                 break;
-            case 2:
+            case 3:
                 System.out.println("Por favor, informe o nome da nova tabela");
                 tabelaNome = dado.nextLine();
                 DatabaseAdicao.adicionarTabela(connection, tabelaNome);
