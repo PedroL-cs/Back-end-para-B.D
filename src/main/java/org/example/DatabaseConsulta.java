@@ -3,7 +3,6 @@ package org.example;
 import java.sql.*;
 
 public class DatabaseConsulta {
-    // Consultar coluna específica de uma tabela
     public static void consultarColuna(Connection connection, String tabela, String colunas) {
         String idColuna = tabela + "Id";
         StringBuilder query = new StringBuilder("SELECT " + idColuna);
@@ -47,7 +46,6 @@ public class DatabaseConsulta {
         }
     }
 
-    // Consultar tabela inteira
     public static void consultarTabela(Connection connection, String tabela) {
         StringBuilder query = new StringBuilder("SELECT*FROM " + tabela);
 
@@ -84,9 +82,9 @@ public class DatabaseConsulta {
     public static void consultarTabelaPorStatus(Connection connection, String tabela, int condicao) {
         StringBuilder query = new StringBuilder("SELECT*FROM " + tabela);
 
-        if (condicao == 2) {
+        if (condicao == 1) {
             query.append(" WHERE status = 'Concluido'");
-        } else if (condicao == 3) {
+        } else if (condicao == 2) {
             query.append(" WHERE status = 'Pendente'");
         }
 
@@ -123,9 +121,9 @@ public class DatabaseConsulta {
     public static void consultarTabelaPorData(Connection connection, String tabela, int condicao, String data) {
         StringBuilder query = new StringBuilder("SELECT*FROM " + tabela);
 
-        if (condicao == 4) {
+        if (condicao == 1) {
             query.append(" WHERE dataInicio = '" + data + "'");
-        } else if (condicao == 5) {
+        } else if (condicao == 2) {
             query.append(" WHERE dataFim = '" + data + "'");
         }
 
@@ -158,7 +156,7 @@ public class DatabaseConsulta {
     }
 
     public static void consultarTabelaPorNumPessoas(Connection connection, String tabela, int num) {
-        StringBuilder query = new StringBuilder("SELECT*FROM " + tabela + " WHERE numPessoas > " + num);
+        StringBuilder query = new StringBuilder("SELECT*FROM " + tabela + " WHERE numPessoas = " + num);
 
         try {
             Statement statement = connection.createStatement();
@@ -188,11 +186,37 @@ public class DatabaseConsulta {
         }
     }
 
+    public static void consultarTabelaPorNumTarefas(Connection connection, int num) {
+        StringBuilder query = new StringBuilder("SELECT*FROM Projeto WHERE numTarefas = '" + num + "'");
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            ResultSetMetaData rsMetaData = resultSet.getMetaData();
+            int numColuna = resultSet.getMetaData().getColumnCount();
+
+            int j = 0;
+            while (resultSet.next()) {
+                j++;
+                System.out.println("Item n° " + j + ":");
+                for (int i = 1; i <= numColuna; i++) {
+                    System.out.print(rsMetaData.getColumnName(i) + ": "); // Resgata nome da coluna
+                    System.out.println(resultSet.getString(i) + " ; "); // Resgata conteúdo da coluna
+                }
+                System.out.println();
+            }
+
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar a tabela: " + e.getMessage());
+        }
+    }
+
     public static void consultarTabelaPorProjeto(Connection connection, String tabela, String nomeProjeto) {
         StringBuilder query = new StringBuilder("SELECT tarefa.tarefaId, tarefa.nomeTarefa, tarefa.descricaoTarefa, tarefa.status, tarefa.projetoId FROM " + tabela + " JOIN Projeto AS projeto ON tarefa.projetoId = projeto.projetoId WHERE projeto.nomeProjeto = '" + nomeProjeto + "'");
 
         try {
-            System.out.println(query);
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query.toString());
 
@@ -220,6 +244,43 @@ public class DatabaseConsulta {
             } else {
                 System.err.println("Erro ao consultar a tabela: " + e.getMessage());
             }
+        }
+    }
+
+    public static void consultarTabelaPorProjetoEStatus(Connection connection, String tabela, String nomeProjeto, int condicao) {
+        StringBuilder query = new StringBuilder("SELECT tarefa.tarefaId, tarefa.nomeTarefa, tarefa.descricaoTarefa, tarefa.status, tarefa.projetoId FROM " + tabela + " JOIN Projeto AS projeto ON tarefa.projetoId = projeto.projetoId WHERE projeto.nomeProjeto = '" + nomeProjeto + "' AND ");
+
+        if (condicao == 1) {
+            query.append("tarefa.status = 'Concluído'");
+        } else if (condicao == 2) {
+            query.append("tarefa.status = 'Pendente'");
+        }
+
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeQuery(query.toString());
+
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            ResultSetMetaData rsMetaData = resultSet.getMetaData();
+            int numColuna = rsMetaData.getColumnCount();
+
+            int j = 0;
+            while (resultSet.next()) {
+                j++;
+                System.out.println("Item n° " + j + ":");
+                for (int i = 1; i <= numColuna; i++) {
+                    System.out.print(rsMetaData.getColumnName(i) + ": ");
+                    System.out.println(resultSet.getString(i) + " ; ");
+                }
+                System.out.println();
+            }
+
+            resultSet.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar a tabela: " + e.getMessage());
         }
     }
 }
