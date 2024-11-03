@@ -49,11 +49,17 @@ public class DatabaseAdicao {
         query.append("'" + descricao + "', ");
         query.append(projetoId + ")");
 
+        StringBuilder incrementaTarefa = new StringBuilder("UPDATE Projeto SET numTarefas = numTarefas + 1 WHERE projetoId = " + projetoId);
+
         try {
             Statement statement = connection.createStatement();
-            statement.executeUpdate(query.toString());
 
-            System.out.println("Novo registro na tabela 'Tarefa' foi realizado! Para visualiza-lo, consulte a respectiva tabela");
+            statement.executeUpdate(query.toString());
+            System.out.println("Novo registro na tabela 'Tarefa' foi realizado!");
+
+            statement.executeUpdate(incrementaTarefa.toString());
+            System.out.println("Número de tarefas do projeto atualizado!");
+
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar o registro: " + e.getMessage());
         }
