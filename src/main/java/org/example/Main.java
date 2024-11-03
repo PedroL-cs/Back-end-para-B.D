@@ -34,8 +34,11 @@ public class Main {
                     case 2:
                         adicionarDados(connection, dado);
                         break;
+                    case 3:
+                        // editarDados(connection, dado);
+                        break;
                     case 4:
-                        // excluirDados(connection, dado);
+                        excluirDados(connection, dado);
                         break;
                     case 5:
                         running = false;
@@ -371,6 +374,225 @@ public class Main {
                 break;
             default:
                 System.out.println("Opção inválida");
+                break;
+        }
+    }
+
+    private static void excluirDados(Connection connection, Scanner dado) {
+        System.out.println("ATENÇÃO: a exclusão de dados não pode ser desfeita!");
+        System.out.println("O que deseja fazer?");
+        System.out.println("1. Excluir registros de uma tabela");
+        System.out.println("2. Excluir colunas selecionadas de uma tabela");
+        System.out.println("3. Excluir uma tabela inteira");
+        int escolha = dado.nextInt();
+        dado.nextLine();
+
+        switch (escolha) {
+            case 1:
+                listarTabelas(connection);
+                System.out.println("Informe o nome da tabela desejada:");
+                String tabelaNome = dado.nextLine();
+
+                if (tabelaNome.equalsIgnoreCase("projeto")) {
+                    System.out.println("Qual será a condição da exclusão?");
+                    System.out.println("1. Excluir projetos concluídos");
+                    System.out.println("2. Excluir projetos pendentes");
+                    System.out.println("3. Excluir projetos de acordo com a data de finalização");
+                    System.out.println("4. Excluir projetos de acordo com seu Id");
+                    int escolha2 = dado.nextInt();
+                    dado.nextLine();
+
+                    switch (escolha2) {
+                        case 1:
+                            DatabaseConsulta.consultarTabelaPorStatus(connection, "Projeto", 2);
+                            System.out.println("Esses registros devem ser excluídos? Isso não poderá ser desfeito. (sim / não)");
+                            String escolha3 = dado.nextLine();
+
+                            if (escolha3.equalsIgnoreCase("sim")) {
+                                DatabaseExclusao.excluirRegistroPorStatus(connection, "Projeto", 1);
+                            } else {
+                                System.out.println("A exclusão foi cancelada!");
+                            }
+                            break;
+                        case 2:
+                            DatabaseConsulta.consultarTabelaPorStatus(connection, "Projeto", 3);
+                            System.out.println("Esses registros devem ser excluídos? Isso não poderá ser desfeito. (sim / não)");
+                            escolha3 = dado.nextLine();
+
+                            if (escolha3.equalsIgnoreCase("sim")) {
+                                DatabaseExclusao.excluirRegistroPorStatus(connection, "Projeto", 2);
+                            } else {
+                                System.out.println("A exclusão foi cancelada!");
+                            }
+                            break;
+                        case 3:
+                            System.out.println("Informe a data desejada: (YYYY-MM-DD)");
+                            String data = dado.nextLine();
+
+                            DatabaseConsulta.consultarTabelaPorData(connection, "Projeto", 5, data);
+                            System.out.println("Esse registro deve ser excluído? Isso não poderá ser desfeito. (sim / não)");
+                            escolha3 = dado.nextLine();
+
+                            if (escolha3.equalsIgnoreCase("sim")) {
+                                DatabaseExclusao.excluirRegistroPorData(connection, data);
+                            } else {
+                                System.out.println("A exclusão foi cancelada!");
+                            }
+                            break;
+                        case 4:
+                            DatabaseConsulta.consultarColuna(connection, "Projeto", "nomeProjeto");
+                            System.out.println("Digite o Id do registro a ser excluído:");
+                            int id = dado.nextInt(); dado.nextLine();
+
+                            System.out.println("Esse registro deve ser excluído? Isso não poderá ser desfeito. (sim / não)");
+                            escolha3 = dado.nextLine();
+
+                            if (escolha3.equalsIgnoreCase("sim")) {
+                                DatabaseExclusao.excluirRegistroPorId(connection, "Projeto", id);
+                            } else {
+                                System.out.println("A exclusão foi cancelada!");
+                            }
+                            break;
+                        default:
+                            System.out.println("Insira um valor válido!");
+                            break;
+                    }
+
+                } else if (tabelaNome.equalsIgnoreCase("tarefa")) {
+                    System.out.println("Qual será a condição de exclusão?");
+                    System.out.println("1. Excluir tarefas concluídas");
+                    System.out.println("2. Excluir tarefas pendentes");
+                    System.out.println("3. Excluir tarefas de acordo com o projeto associado");
+                    System.out.println("4. Excluir tarefas de acordo com seu Id");
+                    int escolha2 = dado.nextInt(); dado.nextLine();
+
+                    switch (escolha2) {
+                        case 1:
+                            DatabaseConsulta.consultarTabelaPorStatus(connection, "Tarefa", 2);
+                            System.out.println("Esses registros devem ser excluídos? Isso não poderá ser desfeito. (sim / não)");
+                            String escolha3 = dado.nextLine();
+
+                            if (escolha3.equalsIgnoreCase("sim")) {
+                                DatabaseExclusao.excluirRegistroPorStatus(connection, "Tarefa", 1);
+                            } else {
+                                System.out.println("A exclusão foi cancelada!");
+                            }
+                            break;
+                        case 2:
+                            DatabaseConsulta.consultarTabelaPorStatus(connection, "Tarefa", 3);
+                            System.out.println("Esses registros devem ser excluídos? Isso não poderá ser desfeito. (sim / não)");
+                            escolha3 = dado.nextLine();
+
+                            if (escolha3.equalsIgnoreCase("sim")) {
+                                DatabaseExclusao.excluirRegistroPorStatus(connection, "Tarefa", 2);
+                            } else {
+                                System.out.println("A exclusão foi cancelada!");
+                            }
+                            break;
+                        case 3:
+                            DatabaseConsulta.consultarColuna(connection, "Projeto", "nomeProjeto");
+                            System.out.println("Informe o nome do projeto desejado");
+                            String nomeProjeto = dado.nextLine();
+
+                            System.out.println("O que deseja fazer com as tarefas associadas à este projeto?");
+                            System.out.println("1. Excluir as tarefas concluídas");
+                            System.out.println("2. Excluir as tarefas pendentes");
+                            System.out.println("3. Excluir as tarefas de acordo com seu Id");
+                            System.out.println("4. Excluir todas as tarefas deste projeto *");
+                            int escolha4 = dado.nextInt(); dado.nextLine();
+
+                            switch (escolha4) {
+                                case 1:
+                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", nomeProjeto, 1);
+
+                                    System.out.println("Tem certeza que deseja excluir essas tarefas? Isso não poderá ser desfeito. (sim / não)");
+                                    String escolha5 = dado.nextLine();
+
+                                    if (escolha5.equalsIgnoreCase("sim")) {
+                                        DatabaseExclusao.excluirTarefaPorStatusEProjeto(connection, nomeProjeto, 1);
+                                    } else  {
+                                        System.out.println("Exclusão cancelada!");
+                                    }
+                                    break;
+                                case 2:
+                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", nomeProjeto, 2);
+
+                                    System.out.println("Tem certeza que deseja excluir estas tarefas? Isso não poderá ser desfeito. (sim / não)");
+                                    escolha5 = dado.nextLine();
+
+                                    if (escolha5.equalsIgnoreCase("sim")) {
+                                        DatabaseExclusao.excluirTarefaPorStatusEProjeto(connection, nomeProjeto, 2);
+                                    } else  {
+                                        System.out.println("Exclusão cancelada!");
+                                    }
+                                    break;
+                                case 3:
+                                    DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", nomeProjeto);
+
+                                    System.out.println("Informe o Id ou Ids que serão excluídos (Separe-os por vírgula em caso de múltiplos ids)");
+                                    String ids = dado.nextLine();
+
+                                    System.out.println("Tem certeza que deseja excluir estas tarefas? Isso não poderá ser desfeito. (sim / não)");
+                                    escolha5 = dado.nextLine();
+
+                                    if (escolha5.equalsIgnoreCase("sim")) {
+                                        DatabaseExclusao.excluirRegistroPorIds(connection, ids);
+                                    } else  {
+                                        System.out.println("Exclusão cancelada!");
+                                    }
+                                    break;
+                                case 4:
+                                    DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", nomeProjeto);
+
+                                    System.out.println("ATENÇÃO: esta operação não é recomendável. Saiba o que está fazendo");
+
+                                    System.out.println("Tem certeza que deseja excluir todas essas tarefas? Isso não poderá ser desfeito. (sim / não)");
+                                    escolha5 = dado.nextLine();
+
+                                    if (escolha5.equalsIgnoreCase("sim")) {
+                                        DatabaseExclusao.excluirTarefaPorProjetoAssociado(connection, nomeProjeto);
+                                    } else  {
+                                        System.out.println("Exclusão cancelada!");
+                                    }
+                                    break;
+                            }
+                            break;
+                        case 4:
+                            DatabaseConsulta.consultarColuna(connection, "Tarefa", "nomeTarefa");
+                            System.out.println("Digite o Id do registro a ser excluído:");
+                            int id = dado.nextInt(); dado.nextLine();
+
+                            System.out.println("Esse registro deve ser excluído? Isso não poderá ser desfeito. (sim / não)");
+                            escolha3 = dado.nextLine();
+
+                            if (escolha3.equalsIgnoreCase("sim")) {
+                                DatabaseExclusao.excluirRegistroPorId(connection, "Tarefa", id);
+                            } else {
+                                System.out.println("A exclusão foi cancelada!");
+                            }
+                            break;
+                    }
+                }
+
+                break;
+            case 2:
+                listarTabelas(connection);
+                System.out.println("Informe o nome da tabela desejada:");
+                tabelaNome = dado.nextLine();
+
+                listarColunas(connection, tabelaNome);
+                System.out.println("Informe agora o nome das colunas desejadas (em caso de múltiplas colunas, separe-as por vírgula) :");
+                String colunas = dado.nextLine();
+
+                DatabaseExclusao.excluirColuna(connection, tabelaNome, colunas);
+                break;
+            case 3:
+                System.out.println("ATENÇÃO: a exclusão de tabelas não é aconselhável. Saiba o que está fazendo!");
+                listarTabelas(connection);
+                System.out.println("Forneça o nome da tabela a ser excluída:");
+                tabelaNome = dado.nextLine();
+
+                DatabaseExclusao.excluirTabela(connection, tabelaNome);
                 break;
         }
     }
