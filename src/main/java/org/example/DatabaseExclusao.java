@@ -26,25 +26,6 @@ public class DatabaseExclusao {
         }
     }
 
-    public static void excluirTarefaPorStatusEProjeto(Connection connection, String nomeProjeto, int condicao) {
-        StringBuilder query = new StringBuilder("DELETE FROM Tarefa WHERE projetoId = (SELECT projetoId FROM Projeto WHERE nomeProjeto = '" + nomeProjeto + "') AND "); // subconsulta
-
-        if (condicao == 1) {
-            query.append("status = 'Concluído'");
-        } else if (condicao == 2) {
-            query.append("status = 'Pendente'");
-        }
-
-        try {
-            Statement statement = connection.createStatement();
-            int exclusoes = statement.executeUpdate(query.toString());
-
-            System.out.println("Número de tarefas excluídas: " + exclusoes);
-        } catch (SQLException e) {
-            System.err.println("Erro ao excluir tarefas: " + e.getMessage());
-        }
-    }
-
     public static void excluirRegistroPorData(Connection connection, String data) {
         StringBuilder query = new StringBuilder("DELETE FROM Projeto WHERE dataFim = '" + data + "'");
 
@@ -98,18 +79,49 @@ public class DatabaseExclusao {
         }
     }
 
-    public static void excluirTarefaPorProjetoAssociado(Connection connection, String projetoNome) {
+    public static void excluirTarefaPorProjetoAssociado(Connection connection, String nomeProjeto) {
         StringBuilder query = new StringBuilder("DELETE tarefa FROM Tarefa " +
                 "JOIN Projeto AS projeto ON tarefa.projetoId = projeto.projetoId " +
-                "WHERE projeto.nomeProjeto = '" + projetoNome + "'");
+                "WHERE projeto.nomeProjeto = '" + nomeProjeto + "'");
 
         try {
             Statement statement = connection.createStatement();
-            statement.executeUpdate(query.toString());
+            int exclusoes = statement.executeUpdate(query.toString());
 
-            System.out.println("Os registros foram excluídos com sucesso!");
+            if (exclusoes > 0) {
+                String updateProjeto = "UPDATE Projeto SET numTarefas = numTarefas - " + exclusoes +
+                        " WHERE nomeProjeto = '" + nomeProjeto + "'";
+                statement.executeUpdate(updateProjeto);
+            }
+
+            System.out.println("Número de tarefas excluídas: " + exclusoes);
         } catch (SQLException e) {
             System.err.println("Erro ao excluir registro(s): " + e.getMessage());
+        }
+    }
+
+    public static void excluirTarefaPorStatusEProjeto(Connection connection, String nomeProjeto, int condicao) {
+        StringBuilder query = new StringBuilder("DELETE FROM Tarefa WHERE projetoId = (SELECT projetoId FROM Projeto WHERE nomeProjeto = '" + nomeProjeto + "') AND "); // subconsulta
+
+        if (condicao == 1) {
+            query.append("status = 'Concluído'");
+        } else if (condicao == 2) {
+            query.append("status = 'Pendente'");
+        }
+
+        try {
+            Statement statement = connection.createStatement();
+            int exclusoes = statement.executeUpdate(query.toString());
+
+            if (exclusoes > 0) {
+                String updateProjeto = "UPDATE Projeto SET numTarefas = numTarefas - " + exclusoes +
+                        " WHERE nomeProjeto = '" + nomeProjeto + "'";
+                statement.executeUpdate(updateProjeto);
+            }
+
+            System.out.println("Número de tarefas excluídas: " + exclusoes);
+        } catch (SQLException e) {
+            System.err.println("Erro ao excluir tarefas: " + e.getMessage());
         }
     }
 
