@@ -283,4 +283,125 @@ public class DatabaseConsulta {
             System.err.println("Erro ao consultar a tabela: " + e.getMessage());
         }
     }
+
+    public static void consultarNomeDeTabela(Connection connection, String tabela, int id) {
+        StringBuilder query = new StringBuilder("SELECT nome" + tabela + " FROM " + tabela + " WHERE " + tabela + "Id = " + id);
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            if (resultSet.next()) {
+                String nome = resultSet.getString("nome" + tabela);
+                System.out.println(nome);
+            } else {
+                System.out.println("Registro não encontrado.");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar nome do registro: " + e.getMessage());
+        }
+    }
+
+    public static void consultarDescricaoDeTabela(Connection connection, String tabela, int id) {
+        StringBuilder query = new StringBuilder("SELECT descricao" + tabela + " FROM " + tabela + " WHERE " + tabela + "Id = " + id);
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            if (resultSet.next()) {
+                String descricao = resultSet.getString("descricao" + tabela);
+                System.out.println(descricao);
+            } else {
+                System.out.println("Registro não encontrado.");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar descrição do registro: " + e.getMessage());
+        }
+    }
+
+    public static String consultarStatusDeTabela(Connection connection, String tabela, int id) {
+        StringBuilder query = new StringBuilder("SELECT status FROM " + tabela + " WHERE " + tabela + "Id = " + id);
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            if (resultSet.next()) {
+                String status = resultSet.getString("status");
+                System.out.println(status);
+                return status;
+            } else {
+                System.out.println("Registro não encontrado.");
+            }
+
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar status do registro: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public static void consultarNumPessoasDeProjeto(Connection connection, int id) {
+        StringBuilder query = new StringBuilder("SELECT numPessoas FROM Projeto WHERE projetoId = " + id);
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            if (resultSet.next()) {
+                String numPessoas = resultSet.getString("numPessoas");
+                System.out.println(numPessoas);
+            } else {
+                System.out.println("Registro não encontrado.");
+            }
+
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar status do registro: " + e.getMessage());
+        }
+    }
+
+    public static void consultarNumTarefasDeProjeto(Connection connection, int id) {
+        StringBuilder query = new StringBuilder("SELECT numTarefas FROM Projeto WHERE projetoId = " + id);
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            if (resultSet.next()) {
+                String numTarefas = resultSet.getString("numTarefas");
+                System.out.println(numTarefas);
+            } else {
+                System.out.println("Registro não encontrado.");
+            }
+
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar status do registro: " + e.getMessage());
+        }
+    }
+
+    public static void consultarDataDeProjeto(Connection connection, String date, int id) {
+
+        StringBuilder query = new StringBuilder("SELECT " + date + " FROM Projeto WHERE projetoId = " + id);
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            if (resultSet.next()) {
+                String data = resultSet.getString(date);
+                System.out.println(data);
+            } else {
+                System.out.println("Registro não encontrado.");
+            }
+
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar status do registro: " + e.getMessage());
+        }
+    }
 }
