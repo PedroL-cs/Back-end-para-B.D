@@ -359,8 +359,8 @@ public class DatabaseConsulta {
         return null;
     }
 
-    public static void consultarNumPessoasDeProjeto(Connection connection, int id) {
-        StringBuilder query = new StringBuilder("SELECT numPessoas FROM Projeto WHERE projetoId = " + id);
+    public static void consultarNumPessoasDeTabela(Connection connection, String tabela, int id) {
+        StringBuilder query = new StringBuilder("SELECT numPessoas FROM " + tabela + " WHERE " + tabela + "Id = " + id);
 
         try {
             Statement statement = connection.createStatement();

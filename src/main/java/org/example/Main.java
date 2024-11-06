@@ -35,7 +35,7 @@ public class Main {
                         adicionarDados(connection, dado);
                         break;
                     case 3:
-                        // editarDados(connection, dado);
+                        editarDados(connection, dado);
                         break;
                     case 4:
                         excluirDados(connection, dado);
@@ -161,7 +161,7 @@ public class Main {
                     System.out.println("Qual será a condição de consulta?");
                     System.out.println("1. Nenhuma");
                     System.out.println("2. Consultar tarefas por status (concluída / pendente)");
-                    System.out.println("3. Consultar tarefas por projeto associado (nome)");
+                    System.out.println("3. Consultar tarefas por projeto associado (id)");
                     int escolha2 = dado.nextInt();
                     dado.nextLine();
 
@@ -375,6 +375,235 @@ public class Main {
             default:
                 System.out.println("Opção inválida");
                 break;
+        }
+    }
+
+    private static void editarDados(Connection connection, Scanner dado) {
+        System.out.println("O que você deseja fazer?");
+        System.out.println("1. Editar projeto");
+        System.out.println("2. Editar tarefa");
+        int escolha = dado.nextInt(); dado.nextLine();
+
+        if (escolha == 1) {
+            DatabaseConsulta.consultarTabela(connection, "Projeto");
+            System.out.println("Por favor, informe o id do projeto que deseja atualizar");
+            int projetoId = dado.nextInt(); dado.nextLine();
+
+            System.out.println("O que você deseja fazer com este projeto?");
+            System.out.println("1. Alterar nome");
+            System.out.println("2. Alterar descrição");
+            System.out.println("3. Alternar status");
+            System.out.println("4. Alterar número de pessoas envolvidas");
+            System.out.println("5. Alterar número de tarefas");
+            System.out.println("6. Alterar data de início ou de conclusão");
+            escolha = dado.nextInt(); dado.nextLine();
+
+            switch (escolha) {
+                case 1:
+                    System.out.print("Nome anterior: ");
+                    DatabaseConsulta.consultarNomeDeTabela(connection, "Projeto", projetoId);
+                    System.out.print("Novo nome: ");
+                    String novoNome = dado.nextLine();
+
+                    DatabaseEdicao.editarNomeRegistro(connection, "Projeto", novoNome, projetoId);
+                    break;
+                case 2:
+                    System.out.println("Descrição anterior: ");
+                    DatabaseConsulta.consultarDescricaoDeTabela(connection, "Projeto", projetoId);
+                    System.out.println("Nova descrição: ");
+                    String novaDesc = dado.nextLine();
+
+                    DatabaseEdicao.editarDescricaoRegistro(connection, "Projeto", novaDesc, projetoId);
+                    break;
+                case 3:
+                    String status = DatabaseConsulta.consultarStatusDeTabela(connection, "Projeto", projetoId);
+                    // Tornar o status do projeto como concluído caso esteja pendente
+                    if (status.equalsIgnoreCase("Pendente")) {
+                        System.out.println("O status do projeto está 'Pendente'. Deseja torná-lo 'Concluído'? (sim / não)");
+                        String escolha2 = dado.nextLine();
+                        if (escolha2.equalsIgnoreCase("sim")) {
+                            DatabaseEdicao.editarStatusRegistro(connection, "Projeto", true, projetoId);
+                        } else {
+                            System.out.println("Operação cancelada!");
+                        }
+                    }
+                    // Tornar o status do projeto como pendente caso esteja concluído
+                    else if (status.equalsIgnoreCase("Concluído")) {
+                        System.out.println("O status do projeto está 'Concluído'. Deseja torná-lo 'Pendente'? (sim / não)");
+                        String escolha2 = dado.nextLine();
+                        if (escolha2.equalsIgnoreCase("sim")) {
+                            DatabaseEdicao.editarStatusRegistro(connection, "Projeto", false, projetoId);
+                        } else {
+                            System.out.println("Operação cancelada!");
+                        }
+                    }
+                    break;
+                case 4:
+                    System.out.print("Número atual de pessoas no projeto: ");
+                    DatabaseConsulta.consultarNumPessoasDeTabela(connection, "Projeto", projetoId);
+                    System.out.println("Você deseja alterar o número de pessoas envolvidas neste projeto? (sim / não)");
+                    String escolha2 = dado.nextLine();
+
+                    if (escolha2.equalsIgnoreCase("sim")) {
+                        System.out.println("Informe o novo número de pessoas envolvidas neste projeto:");
+                        int novoNumPessoas = dado.nextInt(); dado.nextLine();
+
+                        if (novoNumPessoas < 0) {
+                            System.out.println("O valor não é válido. Tente novamente e forneça um valor válido para o número de pessoas");
+                        } else
+                            DatabaseEdicao.editarNumPessoasRegistro(connection, "Projeto",novoNumPessoas, projetoId);
+                    } else {
+                        System.out.println("Operação cancelada!");
+                    }
+                    break;
+                case 5:
+                    System.out.print("Número atual de tarefas no projeto: ");
+                    DatabaseConsulta.consultarNumTarefasDeProjeto(connection, projetoId);
+                    System.out.println("Você deseja alterar o número de tarefas deste projeto? (sim / não)");
+                    escolha2 = dado.nextLine();
+
+                    if (escolha2.equalsIgnoreCase("sim")) {
+                        System.out.println("Informe o novo número de tarefas no projeto:");
+                        int novoNumTarefas = dado.nextInt(); dado.nextLine();
+
+                        if (novoNumTarefas < 0) {
+                            System.out.println("O valor não é válido. Tente novamente e forneça um valor válido para o número de tarefas");
+                        } else {
+                            DatabaseEdicao.editarNumTarefasProjeto(connection, novoNumTarefas, projetoId);
+                        }
+                    } else {
+                        System.out.println("Operação cancelada!");
+                    }
+                    break;
+                case 6:
+                    System.out.println("Você deseja alterar a data de início ou de conclusão do projeto?");
+                    System.out.println("1. Início");
+                    System.out.println("2. Conclusão");
+                    int escolha3 = dado.nextInt(); dado.nextLine();
+
+                    if (escolha3 == 1) {
+                        System.out.print("Data de início atual: ");
+                        DatabaseConsulta.consultarDataDeProjeto(connection, "dataInicio", projetoId);
+                        System.out.println("Insira a nova data de início do projeto (YYYY-MM-DD) (Insira 'Cancelar' caso queira cancelar a ação");
+                        String novaData = dado.nextLine();
+
+                        if (novaData.equalsIgnoreCase("cancelar")) {
+                            System.out.println("Operação cancelada");
+                            break;
+                        } else {
+                            DatabaseEdicao.editarDataProjeto(connection, "dataInicio", novaData, projetoId);
+                        }
+                    } else if (escolha3 == 2) {
+                        System.out.print("Data de início atual: ");
+                        DatabaseConsulta.consultarDataDeProjeto(connection, "dataFim", projetoId);
+                        System.out.println("Insira a nova data de conclusão do projeto (YYYY-MM-DD) (Insira 'Cancelar' caso queira cancelar a ação");
+                        String novaData = dado.nextLine();
+
+                        if (novaData.equalsIgnoreCase("cancelar")) {
+                            System.out.println("Operação cancelada");
+                            break;
+                        } else {
+                            DatabaseEdicao.editarDataProjeto(connection, "dataFim", novaData, projetoId);
+                        }
+                    } else {
+                        System.out.println("Operação cancelada");
+                    }
+                    break;
+            }
+        } else if (escolha == 2) {
+            DatabaseConsulta.consultarColuna(connection, "Projeto", "nomeProjeto");
+            System.out.println("Por favor, escolha o projeto associado à tarefa que você deseja atualizar");
+            int projetoId = dado.nextInt(); dado.nextLine();
+
+            DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", projetoId);
+            System.out.println("Por favor, informe o id da tarefa que deseja atualizar");
+            int tarefaId = dado.nextInt(); dado.nextLine();
+
+            System.out.println("O que você deseja fazer com esta tarefa?");
+            System.out.println("1. Alterar nome");
+            System.out.println("2. Alterar descrição");
+            System.out.println("3. Alternar status");
+            System.out.println("4. Alterar número de pessoas envolvidas");
+            escolha = dado.nextInt(); dado.nextLine();
+
+            switch (escolha) {
+                case 1:
+                    System.out.print("Nome anterior: ");
+                    DatabaseConsulta.consultarNomeDeTabela(connection, "Tarefa", tarefaId);
+
+                    System.out.println("Você deseja alterar o nome da tarefa? (sim / não)");
+                    String escolha2 = dado.nextLine();
+
+                    if (escolha2.equalsIgnoreCase("sim")) {
+                        System.out.println("Informe o novo nome: ");
+                        String novoNome = dado.nextLine();
+
+                        DatabaseEdicao.editarNomeRegistro(connection, "Tarefa", novoNome, tarefaId);
+                    } else {
+                        System.out.println("Operação cancelada!");
+                    }
+                    break;
+
+                case 2:
+                    System.out.println("Descrição anterior:");
+                    DatabaseConsulta.consultarDescricaoDeTabela(connection, "Tarefa", tarefaId);
+
+                    System.out.println("Você deseja alterar a descrição da tarefa? (sim / não)");
+                    escolha2 = dado.nextLine();
+
+                    if (escolha2.equalsIgnoreCase("sim")) {
+                        System.out.println("Informe a nova descrição: ");
+                        String novaDesc = dado.nextLine();
+
+                        DatabaseEdicao.editarDescricaoRegistro(connection, "Tarefa", novaDesc, tarefaId);
+                    } else {
+                        System.out.println("Operação cancelada!");
+                    }
+                    break;
+                case 3:
+                    String status = DatabaseConsulta.consultarStatusDeTabela(connection, "Tarefa", tarefaId);
+                    // Tornar o status da tarefa como concluído caso esteja pendente
+                    if (status.equalsIgnoreCase("Pendente")) {
+                        System.out.println("O status da tarefa está 'Pendente'. Deseja torná-la 'Concluído'? (sim / não)");
+                        escolha2 = dado.nextLine();
+                        if (escolha2.equalsIgnoreCase("sim")) {
+                            DatabaseEdicao.editarStatusRegistro(connection, "Tarefa", true, tarefaId);
+                        } else {
+                            System.out.println("Operação cancelada!");
+                        }
+                    }
+                    // Tornar o status da tarefa como pendente caso esteja concluído
+                    else if (status.equalsIgnoreCase("Concluído")) {
+                        System.out.println("O status da tarefa está 'Pendente'. Deseja torná-la 'Concluído'? (sim / não)");
+                        escolha2 = dado.nextLine();
+                        if (escolha2.equalsIgnoreCase("sim")) {
+                            DatabaseEdicao.editarStatusRegistro(connection, "Tarefa", false, tarefaId);
+                        } else {
+                            System.out.println("Operação cancelada!");
+                        }
+                    }
+                    break;
+                case 4:
+                    System.out.print("Número atual de pessoas na tarefa: ");
+                    DatabaseConsulta.consultarNumPessoasDeTabela(connection, "Tarefa", tarefaId);
+                    System.out.println("Você deseja alterar o número de pessoas envolvidas nesta tarefa? (sim / não)");
+                    escolha2 = dado.nextLine();
+
+                    if (escolha2.equalsIgnoreCase("sim")) {
+                        System.out.println("Informe o novo número de pessoas envolvidas nesta tarefa:");
+                        int novoNumPessoas = dado.nextInt(); dado.nextLine();
+
+                        if (novoNumPessoas < 0) {
+                            System.out.println("O valor não é válido. Tente novamente e forneça um valor válido para o número de pessoas");
+                        } else
+                            DatabaseEdicao.editarNumPessoasRegistro(connection, "Tarefa",novoNumPessoas, tarefaId);
+                    } else {
+                        System.out.println("Operação cancelada!");
+                    }
+                    break;
+            }
+        } else {
+            System.out.println("Opção inválida. Por favor tente novamente com um valor válido");
         }
     }
 
