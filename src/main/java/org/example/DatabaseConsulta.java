@@ -145,6 +145,9 @@ public class DatabaseConsulta {
                 System.out.println();
             }
 
+            resultSet.close();
+            statement.close();
+
         } catch (SQLException e) {
             if (e.getMessage().contains("doesn't exist")) {
                 System.out.println("Parece que você digitou uma tabela que não existe");
@@ -175,6 +178,9 @@ public class DatabaseConsulta {
                 }
                 System.out.println();
             }
+
+            resultSet.close();
+            statement.close();
 
         } catch (SQLException e) {
             if (e.getMessage().contains("doesn't exist")) {
@@ -207,14 +213,16 @@ public class DatabaseConsulta {
                 System.out.println();
             }
 
+            resultSet.close();
+            statement.close();
 
         } catch (SQLException e) {
             System.err.println("Erro ao consultar a tabela: " + e.getMessage());
         }
     }
 
-    public static void consultarTabelaPorProjeto(Connection connection, String tabela, String nomeProjeto) {
-        StringBuilder query = new StringBuilder("SELECT tarefa.tarefaId, tarefa.nomeTarefa, tarefa.descricaoTarefa, tarefa.status, tarefa.projetoId FROM " + tabela + " JOIN Projeto AS projeto ON tarefa.projetoId = projeto.projetoId WHERE projeto.nomeProjeto = '" + nomeProjeto + "'");
+    public static void consultarTabelaPorProjeto(Connection connection, String tabela, int projetoId) {
+        StringBuilder query = new StringBuilder("SELECT tarefa.tarefaId, tarefa.nomeTarefa, tarefa.descricaoTarefa, tarefa.status, tarefa.projetoId FROM " + tabela + " JOIN Projeto ON tarefa.projetoId = projeto.projetoId WHERE projeto.projetoId = " + projetoId);
 
         try {
             Statement statement = connection.createStatement();
@@ -247,8 +255,8 @@ public class DatabaseConsulta {
         }
     }
 
-    public static void consultarTabelaPorProjetoEStatus(Connection connection, String tabela, String nomeProjeto, int condicao) {
-        StringBuilder query = new StringBuilder("SELECT tarefa.tarefaId, tarefa.nomeTarefa, tarefa.descricaoTarefa, tarefa.status, tarefa.projetoId FROM " + tabela + " JOIN Projeto AS projeto ON tarefa.projetoId = projeto.projetoId WHERE projeto.nomeProjeto = '" + nomeProjeto + "' AND ");
+    public static void consultarTabelaPorProjetoEStatus(Connection connection, String tabela, int projetoId, int condicao) {
+        StringBuilder query = new StringBuilder("SELECT tarefa.tarefaId, tarefa.nomeTarefa, tarefa.descricaoTarefa, tarefa.status, tarefa.projetoId FROM " + tabela + " JOIN Projeto AS projeto ON tarefa.projetoId = projeto.projetoId WHERE projeto.projetoId = " + projetoId + " AND ");
 
         if (condicao == 1) {
             query.append("tarefa.status = 'Concluído'");
@@ -298,6 +306,9 @@ public class DatabaseConsulta {
                 System.out.println("Registro não encontrado.");
             }
 
+            resultSet.close();
+            statement.close();
+
         } catch (SQLException e) {
             System.err.println("Erro ao consultar nome do registro: " + e.getMessage());
         }
@@ -317,6 +328,9 @@ public class DatabaseConsulta {
                 System.out.println("Registro não encontrado.");
             }
 
+            resultSet.close();
+            statement.close();
+
         } catch (SQLException e) {
             System.err.println("Erro ao consultar descrição do registro: " + e.getMessage());
         }
@@ -331,12 +345,13 @@ public class DatabaseConsulta {
 
             if (resultSet.next()) {
                 String status = resultSet.getString("status");
-                System.out.println(status);
                 return status;
             } else {
                 System.out.println("Registro não encontrado.");
             }
 
+            resultSet.close();
+            statement.close();
 
         } catch (SQLException e) {
             System.err.println("Erro ao consultar status do registro: " + e.getMessage());
@@ -358,6 +373,8 @@ public class DatabaseConsulta {
                 System.out.println("Registro não encontrado.");
             }
 
+            resultSet.close();
+            statement.close();
 
         } catch (SQLException e) {
             System.err.println("Erro ao consultar status do registro: " + e.getMessage());
@@ -378,6 +395,8 @@ public class DatabaseConsulta {
                 System.out.println("Registro não encontrado.");
             }
 
+            resultSet.close();
+            statement.close();
 
         } catch (SQLException e) {
             System.err.println("Erro ao consultar status do registro: " + e.getMessage());
@@ -399,6 +418,8 @@ public class DatabaseConsulta {
                 System.out.println("Registro não encontrado.");
             }
 
+            resultSet.close();
+            statement.close();
 
         } catch (SQLException e) {
             System.err.println("Erro ao consultar status do registro: " + e.getMessage());

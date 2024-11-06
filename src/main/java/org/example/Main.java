@@ -188,10 +188,10 @@ public class Main {
                             }
                         case 3:
                             DatabaseConsulta.consultarColuna(connection, "Projeto", "nomeProjeto");
-                            System.out.println("Informe qual projeto será usado como condição de consulta");
-                            String nomeProjeto = dado.nextLine();
+                            System.out.println("Informe o Id do projeto que será usado como condição de consulta");
+                            int projetoId = dado.nextInt(); dado.nextLine();
 
-                            System.out.println("O que você deseja fazer com as tarefas associadas ao projeto " + nomeProjeto);
+                            System.out.println("O que você deseja fazer com as tarefas associadas à este projeto");
                             System.out.println("1. Consultar todas as tarefas");
                             System.out.println("2. Consultar tarefas concluídas");
                             System.out.println("3. Consultar tarefas pendentes");
@@ -199,13 +199,13 @@ public class Main {
 
                             switch (escolha3) {
                                 case 1:
-                                    DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", nomeProjeto);
+                                    DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", projetoId);
                                     break;
                                 case 2:
-                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", nomeProjeto, 1);
+                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", projetoId, 1);
                                     break;
                                 case 3:
-                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", nomeProjeto, 2);
+                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", projetoId, 2);
                                     break;
                                 default:
                                     System.out.println("Insira um valor válido!");
@@ -491,8 +491,8 @@ public class Main {
                             break;
                         case 3:
                             DatabaseConsulta.consultarColuna(connection, "Projeto", "nomeProjeto");
-                            System.out.println("Informe o nome do projeto desejado");
-                            String nomeProjeto = dado.nextLine();
+                            System.out.println("Informe o Id do projeto desejado");
+                            int projetoId = dado.nextInt(); dado.nextLine();
 
                             System.out.println("O que deseja fazer com as tarefas associadas à este projeto?");
                             System.out.println("1. Excluir as tarefas concluídas");
@@ -503,31 +503,31 @@ public class Main {
 
                             switch (escolha4) {
                                 case 1:
-                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", nomeProjeto, 1);
+                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", projetoId, 1);
 
                                     System.out.println("Tem certeza que deseja excluir essas tarefas? Isso não poderá ser desfeito. (sim / não)");
                                     String escolha5 = dado.nextLine();
 
                                     if (escolha5.equalsIgnoreCase("sim")) {
-                                        DatabaseExclusao.excluirTarefaPorStatusEProjeto(connection, nomeProjeto, 1);
+                                        DatabaseExclusao.excluirTarefaPorStatusEProjeto(connection, projetoId, 1);
                                     } else  {
                                         System.out.println("Exclusão cancelada!");
                                     }
                                     break;
                                 case 2:
-                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", nomeProjeto, 2);
+                                    DatabaseConsulta.consultarTabelaPorProjetoEStatus(connection, "Tarefa", projetoId, 2);
 
                                     System.out.println("Tem certeza que deseja excluir estas tarefas? Isso não poderá ser desfeito. (sim / não)");
                                     escolha5 = dado.nextLine();
 
                                     if (escolha5.equalsIgnoreCase("sim")) {
-                                        DatabaseExclusao.excluirTarefaPorStatusEProjeto(connection, nomeProjeto, 2);
+                                        DatabaseExclusao.excluirTarefaPorStatusEProjeto(connection, projetoId, 2);
                                     } else  {
                                         System.out.println("Exclusão cancelada!");
                                     }
                                     break;
                                 case 3:
-                                    DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", nomeProjeto);
+                                    DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", projetoId);
 
                                     System.out.println("Informe o Id ou Ids que serão excluídos (Separe-os por vírgula em caso de múltiplos ids)");
                                     String ids = dado.nextLine();
@@ -542,7 +542,7 @@ public class Main {
                                     }
                                     break;
                                 case 4:
-                                    DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", nomeProjeto);
+                                    DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", projetoId);
 
                                     System.out.println("ATENÇÃO: esta operação não é recomendável. Saiba o que está fazendo");
 
@@ -550,7 +550,7 @@ public class Main {
                                     escolha5 = dado.nextLine();
 
                                     if (escolha5.equalsIgnoreCase("sim")) {
-                                        DatabaseExclusao.excluirTarefaPorProjetoAssociado(connection, nomeProjeto);
+                                        DatabaseExclusao.excluirTarefaPorProjetoAssociado(connection, projetoId);
                                     } else  {
                                         System.out.println("Exclusão cancelada!");
                                     }

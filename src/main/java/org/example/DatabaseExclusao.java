@@ -21,6 +21,8 @@ public class DatabaseExclusao {
             statement.executeUpdate(query.toString());
 
             System.out.println("Os registros foram excluídos com sucesso");
+
+            statement.close();
         } catch (SQLException e) {
             System.err.println("Erro ao excluir registro(s): " + e.getMessage());
         }
@@ -34,6 +36,8 @@ public class DatabaseExclusao {
             statement.executeUpdate(query.toString());
 
             System.out.println("Os registros foram excluídos com sucesso!");
+
+            statement.close();
         } catch (SQLException e) {
             System.err.println("Erro ao excluir registro(s): " + e.getMessage());
         }
@@ -47,6 +51,8 @@ public class DatabaseExclusao {
             statement.executeUpdate(query.toString());
 
             System.out.println("Os registros foram excluídos com sucesso!");
+
+            statement.close();
         } catch (SQLException e) {
             System.err.println("Erro ao excluir registro(s): " + e.getMessage());
         }
@@ -72,17 +78,20 @@ public class DatabaseExclusao {
 
         try {
             Statement statement = connection.createStatement();
+
             int exclusoes = statement.executeUpdate(query.toString());
             System.out.println("Número de registros excluídos: " + exclusoes);
+
+            statement.close();
         } catch (SQLException e) {
             System.err.println("Erro ao excluir registro(s): " + e.getMessage());
         }
     }
 
-    public static void excluirTarefaPorProjetoAssociado(Connection connection, String nomeProjeto) {
+    public static void excluirTarefaPorProjetoAssociado(Connection connection, int projetoId) {
         StringBuilder query = new StringBuilder("DELETE tarefa FROM Tarefa " +
                 "JOIN Projeto AS projeto ON tarefa.projetoId = projeto.projetoId " +
-                "WHERE projeto.nomeProjeto = '" + nomeProjeto + "'");
+                "WHERE projeto.projetoId= " + projetoId);
 
         try {
             Statement statement = connection.createStatement();
@@ -90,18 +99,20 @@ public class DatabaseExclusao {
 
             if (exclusoes > 0) {
                 String updateProjeto = "UPDATE Projeto SET numTarefas = numTarefas - " + exclusoes +
-                        " WHERE nomeProjeto = '" + nomeProjeto + "'";
+                        " WHERE projetoId = '" + projetoId;
                 statement.executeUpdate(updateProjeto);
             }
 
             System.out.println("Número de tarefas excluídas: " + exclusoes);
+
+            statement.close();
         } catch (SQLException e) {
             System.err.println("Erro ao excluir registro(s): " + e.getMessage());
         }
     }
 
-    public static void excluirTarefaPorStatusEProjeto(Connection connection, String nomeProjeto, int condicao) {
-        StringBuilder query = new StringBuilder("DELETE FROM Tarefa WHERE projetoId = (SELECT projetoId FROM Projeto WHERE nomeProjeto = '" + nomeProjeto + "') AND "); // subconsulta
+    public static void excluirTarefaPorStatusEProjeto(Connection connection, int projetoId, int condicao) {
+        StringBuilder query = new StringBuilder("DELETE FROM Tarefa WHERE projetoId = (SELECT projetoId FROM Projeto WHERE projetoId = " + projetoId + ") AND "); // subconsulta
 
         if (condicao == 1) {
             query.append("status = 'Concluído'");
@@ -115,11 +126,13 @@ public class DatabaseExclusao {
 
             if (exclusoes > 0) {
                 String updateProjeto = "UPDATE Projeto SET numTarefas = numTarefas - " + exclusoes +
-                        " WHERE nomeProjeto = '" + nomeProjeto + "'";
+                        " WHERE projetoId = " + projetoId;
                 statement.executeUpdate(updateProjeto);
             }
 
             System.out.println("Número de tarefas excluídas: " + exclusoes);
+
+            statement.close();
         } catch (SQLException e) {
             System.err.println("Erro ao excluir tarefas: " + e.getMessage());
         }
@@ -158,6 +171,8 @@ public class DatabaseExclusao {
                 }
             }
             System.out.println(" foram excluídas da tabela " + tabelaNome + ".");
+
+            statement.close();
         } catch (SQLException e) {
             // Verifica se a coluna a ser excluída é uma FK
             if (e.getMessage().contains("foreign key constraint")) {
@@ -193,8 +208,11 @@ public class DatabaseExclusao {
 
         try {
             Statement statement = connection.createStatement();
+
             statement.executeUpdate(query.toString());
             System.out.println("Tabela " + tabelaNome + " foi excluída do banco");
+
+            statement.close();
         } catch (SQLException e) {
             System.err.println("Erro ao excluir a tabela: " + e.getMessage());
         }
