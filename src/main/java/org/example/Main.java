@@ -211,11 +211,12 @@ public class Main {
                                     System.out.println("Insira um valor válido!");
                                     break;
                             }
-
+                            break;
+                        default:
+                            System.out.println("Opção inválida!");
                             break;
                     }
                 }
-
                 break;
             case 2:
                 listarTabelas(connection);
@@ -509,6 +510,9 @@ public class Main {
                         System.out.println("Operação cancelada");
                     }
                     break;
+                default:
+                    System.out.println("Opção inválida!");
+                    break;
             }
         } else if (escolha == 2) {
             DatabaseConsulta.consultarColuna(connection, "Projeto", "nomeProjeto");
@@ -600,6 +604,9 @@ public class Main {
                     } else {
                         System.out.println("Operação cancelada!");
                     }
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
                     break;
             }
         } else {
@@ -784,6 +791,9 @@ public class Main {
                                         System.out.println("Exclusão cancelada!");
                                     }
                                     break;
+                                default:
+                                    System.out.println("Opção inválida!");
+                                    break;
                             }
                             break;
                         case 4:
@@ -800,7 +810,12 @@ public class Main {
                                 System.out.println("A exclusão foi cancelada!");
                             }
                             break;
+                        default:
+                            System.out.println("Opção inválida!");
+                            break;
                     }
+                } else {
+                    System.out.println("Tabela não encontrada!");
                 }
 
                 break;
@@ -822,6 +837,9 @@ public class Main {
                 tabelaNome = dado.nextLine();
 
                 DatabaseExclusao.excluirTabela(connection, tabelaNome);
+                break;
+            default:
+                System.out.println("Opção inválida!");
                 break;
         }
     }

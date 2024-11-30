@@ -8,6 +8,7 @@ public class DatabaseExclusao {
 
     public static void excluirRegistroPorStatus(Connection connection, String tabelaNome, int condicao) {
         StringBuilder query = new StringBuilder("DELETE FROM " + tabelaNome);
+        StringBuilder updateProjetoQuery = new StringBuilder();
 
         if (condicao == 1) {
             query.append(" WHERE status = 'Concluído'");
@@ -18,10 +19,31 @@ public class DatabaseExclusao {
 
         try {
             Statement statement = connection.createStatement();
+
+            if (tabelaNome.equalsIgnoreCase("Tarefa")) {
+                String selectProjetoQuery = "SELECT projetoId, COUNT(*) AS numTarefas " +
+                        "FROM Tarefa WHERE status = " + (condicao == 1 ? "'Concluído'" : "'Pendente'") +
+                        " GROUP BY projetoId";
+                ResultSet rs = statement.executeQuery(selectProjetoQuery);
+
+
+                while (rs.next()) {
+                    String projetoId = rs.getString("projetoId");
+                    int numTarefas = rs.getInt("numTarefas");
+
+                    // Agora, prepara a query para atualizar o número de tarefas no Projeto
+                    updateProjetoQuery.append("UPDATE Projeto SET numTarefas = numTarefas - " + numTarefas +
+                            " WHERE projetoId = '" + projetoId + "'");
+
+                    // Executa a query de atualização
+                    statement.executeUpdate(updateProjetoQuery.toString());
+                }
+                rs.close();
+            }
+
             statement.executeUpdate(query.toString());
 
             System.out.println("Os registros foram excluídos com sucesso");
-
             statement.close();
         } catch (SQLException e) {
             System.err.println("Erro ao excluir registro(s): " + e.getMessage());
@@ -66,20 +88,37 @@ public class DatabaseExclusao {
             return;
         }
 
+        StringBuilder selectProjetoQuery = new StringBuilder("SELECT projetoId FROM Tarefa WHERE tarefaId IN (");
         StringBuilder query = new StringBuilder("DELETE FROM Tarefa WHERE tarefaId IN (");
 
         for (int i = 0; i < idArr.length; i++) {
+            selectProjetoQuery.append(idArr[i]);
             query.append(idArr[i]);
             if (i < idArr.length - 1) {
+                selectProjetoQuery.append(", ");
                 query.append(", ");
             }
         }
+        selectProjetoQuery.append(")");
         query.append(")");
 
         try {
             Statement statement = connection.createStatement();
 
+            ResultSet rs = statement.executeQuery(selectProjetoQuery.toString());
+            String projetoId = null;
+            if (rs.next()) {
+                projetoId = rs.getString("projetoId");
+            }
+            rs.close();
+
             int exclusoes = statement.executeUpdate(query.toString());
+
+            if (exclusoes > 0) {
+                String updateProjeto = "UPDATE Projeto SET numTarefas = numTarefas - " + exclusoes +
+                        " WHERE projetoId = " + projetoId;
+                statement.executeUpdate(updateProjeto);
+            }
             System.out.println("Número de registros excluídos: " + exclusoes);
 
             statement.close();
@@ -98,8 +137,7 @@ public class DatabaseExclusao {
             int exclusoes = statement.executeUpdate(query.toString());
 
             if (exclusoes > 0) {
-                String updateProjeto = "UPDATE Projeto SET numTarefas = numTarefas - " + exclusoes +
-                        " WHERE projetoId = '" + projetoId;
+                String updateProjeto = "UPDATE Projeto SET numTarefas = 0 WHERE projetoId = " + projetoId;
                 statement.executeUpdate(updateProjeto);
             }
 
@@ -112,7 +150,7 @@ public class DatabaseExclusao {
     }
 
     public static void excluirTarefaPorStatusEProjeto(Connection connection, int projetoId, int condicao) {
-        StringBuilder query = new StringBuilder("DELETE FROM Tarefa WHERE projetoId = (SELECT projetoId FROM Projeto WHERE projetoId = " + projetoId + ") AND "); // subconsulta
+        StringBuilder query = new StringBuilder("DELETE FROM Tarefa WHERE projetoId = " + projetoId + " AND ");
 
         if (condicao == 1) {
             query.append("status = 'Concluído'");
