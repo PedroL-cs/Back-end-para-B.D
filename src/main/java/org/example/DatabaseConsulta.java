@@ -221,7 +221,7 @@ public class DatabaseConsulta {
         }
     }
 
-    public static void consultarTabelaPorProjeto(Connection connection, String tabela, int projetoId) {
+    public static boolean consultarTabelaPorProjeto(Connection connection, String tabela, int projetoId) {
         StringBuilder query = new StringBuilder("SELECT tarefa.tarefaId, tarefa.nomeTarefa, tarefa.descricaoTarefa, tarefa.status, tarefa.projetoId FROM " + tabela + " JOIN Projeto ON tarefa.projetoId = projeto.projetoId WHERE projeto.projetoId = " + projetoId);
 
         try {
@@ -230,6 +230,11 @@ public class DatabaseConsulta {
 
             ResultSetMetaData rsMetaData = resultSet.getMetaData();
             int numColuna = rsMetaData.getColumnCount();
+
+            if (!resultSet.isBeforeFirst()) {
+                System.out.println("Não há tarefas neste projeto!");
+                return false;
+            }
 
             int j = 0;
             while (resultSet.next()) {
@@ -253,6 +258,7 @@ public class DatabaseConsulta {
                 System.err.println("Erro ao consultar a tabela: " + e.getMessage());
             }
         }
+        return true;
     }
 
     public static void consultarTabelaPorProjetoEStatus(Connection connection, String tabela, int projetoId, int condicao) {
@@ -424,5 +430,45 @@ public class DatabaseConsulta {
         } catch (SQLException e) {
             System.err.println("Erro ao consultar status do registro: " + e.getMessage());
         }
+    }
+
+    public static String findProjectById(Connection connection, int projetoId) {
+        StringBuilder query = new StringBuilder("SELECT nomeProjeto FROM Projeto WHERE projetoId = " + projetoId);
+        String nomeProjeto = "";
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            if (resultSet.next()) {
+                nomeProjeto = resultSet.getString("nomeProjeto");
+            } else {
+                nomeProjeto = "Nome não encontrado";
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar projeto: " + e.getMessage());
+        }
+        return nomeProjeto;
+    }
+
+    public static String findTaskById(Connection connection, int tarefaId) {
+        StringBuilder query = new StringBuilder("SELECT nomeTarefa FROM Tarefa WHERE tarefaId = " + tarefaId);
+        String nomeTarefa = "";
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            if (resultSet.next()) {
+                nomeTarefa = resultSet.getString("nomeTarefa");
+            } else {
+                nomeTarefa = "Nome não encontrado";
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar projeto: " + e.getMessage());
+        }
+        return nomeTarefa;
     }
 }

@@ -1,15 +1,18 @@
 -- Métodos de consulta
 
 -- Consultar tabela por status
-SELECT * FROM tabela WHERE status = 'Concluído';
-SELECT * FROM tabela WHERE status = 'Pendente';
+SELECT * FROM Projeto WHERE status = 'Concluído';
+SELECT * FROM Projeto WHERE status = 'Pendente';
+SELECT * FROM Tarefa WHERE status = 'Concluído';
+SELECT * FROM Tarefa WHERE status = 'Pendente';
 
 -- Consultar tabela por data
-SELECT * FROM tabela WHERE dataInicio = 'YYYY/MM/DD';
-SELECT * FROM tabela WHERE dataFim = 'YYYY/MM/DD';
+SELECT * FROM Projeto WHERE dataInicio = 'YYYY/MM/DD';
+SELECT * FROM Projeto WHERE dataFim = 'YYYY/MM/DD';
 
 -- Consultar tabela pelo número de pessoas
-SELECT * FROM tabela WHERE numPessoas = ?;
+SELECT * FROM Projeto WHERE numPessoas = ?;
+SELECT * FROM Tarefa WHERE numPessoas = ?;
 
 -- Consultar projetos pelo número de tarefas
 SELECT * FROM Projeto WHERE numTarefas = ?;
@@ -20,21 +23,25 @@ FROM tabela JOIN Projeto ON tarefa.projetoId = projeto.projetoId
 WHERE projeto.projetoId = ?;
 
 -- Consultar tarefa por projeto associado e status
-SELECT tarefa.tarefaId, tarefa.nomeTarefa, tarefa.descricaoTarefa, tarefa.status, tarefa.projetoId FROM tabela
+SELECT tarefa.tarefaId, tarefa.nomeTarefa, tarefa.descricaoTarefa, tarefa.status, tarefa.projetoId FROM tarefa
 JOIN Projeto AS projeto ON tarefa.projetoId = projeto.projetoId
-WHERE projeto.projetoId = ?;
+WHERE projeto.projetoId = ? AND tarefa.status = '?';
 
 -- Pesquisar nome de tabela
-SELECT nomeTabela FROM Tabela WHERE tabelaId = ?;
+SELECT nomeProjeto FROM Projeto WHERE tabelaId = ?;
+SELECT nomeTarefa FROM Tarefa WHERE tarefaId = ?;
 
 -- Pesquisar descrição de tabela
-SELECT descricaoTabela FROM tabela WHERE tabelaId = ?;
+SELECT descricaoProjeto FROM Projeto WHERE projetoId = ?;
+SELECT descricaoTarefa FROM Tarefa WHERE tarefaId = ?;
 
 -- Pesquisar status de tabela
-SELECT status FROM tabela WHERE tabelaId = ?;
+SELECT status FROM Projeto WHERE projetoId = ?;
+SELECT status FROM Tarefa WHERE tarefaId = ?;
 
 -- Pesquisar número de pessoas na tabela
-SELECT numPessoas FROM tabela WHERE tabelaID = ?;
+SELECT numPessoas FROM Projeto WHERE projetoId = ?;
+SELECT numPessoas FROM Tarefa WHERE tarefaId = ?;
 
 -- Pesquisar número de tarefas no projeto
 SELECT numTarefas FROM Projeto WHERE projetoId = ?;
@@ -54,17 +61,22 @@ INSERT INTO Tarefa (nomeTarefa, descricaoTarefa, projetoId) VALUES ('?', '?', ?)
 -- Métodos de edição
 
 -- Editar nome de um registro
-UPDATE tabela SET nomeTabela = '?' WHERE tabelaId = ?;
+UPDATE Projeto SET nomeProjeto = '?' WHERE projetoId = ?;
+UPDATE Tarefa SET nomeTarefa = '?' WHERE tarefaId = ?;
 
 -- Editar descrição de um registro
-UPDATE tabela SET descricaoTabela = '?' WHERE tabelaId = ?;
+UPDATE Projeto SET descricaoProjeto = '?' WHERE projetoId = ?;
+UPDATE Tarefa SET descricaoTarefa = '?' WHERE tarefaId = ?;
 
 -- Editar status de um registro
-UPDATE tabela SET status = 'Concluído' WHERE tabelaId = ?;
-UPDATE tabela SET status = 'Pendente' WHERE tabelaId = ?;
+UPDATE Projeto SET status = 'Concluído' WHERE projetoId = ?;
+UPDATE Projeto SET status = 'Pendente' WHERE projetoId = ?;
+UPDATE Tarefa SET status = 'Concluído' WHERE tarefaId = ?;
+UPDATE Tarefa SET status = 'Pendente' WHERE tarefaId = ?;
 
 -- Editar número de pessoas de um registro
-UPDATE tabela SET numPessoas = ? WHERE tabelaId = ?;
+UPDATE Projeto SET numPessoas = ? WHERE projetoId = ?;
+UPDATE Tarefa SET numPessoas = ? WHERE tarefaid = ?;
 
 -- Editar número de tarefas de um projeto
 UPDATE Projeto SET numTarefas = ? WHERE projetoId = ?;
@@ -72,14 +84,16 @@ UPDATE Projeto SET numTarefas = ? WHERE projetoId = ?;
 -- Métodos de exclusão
 
 -- Excluir registro por status
-DELETE FROM tabela WHERE status = 'Concluído';
-DELETE FROM tabela WHERE status = 'Pendente';
+DELETE FROM Projeto WHERE status = 'Concluído';
+DELETE FROM Projeto WHERE status = 'Pendente';
+DELETE FROM Tarefa WHERE status = 'Concluído';
+DELETE FROM Tarefa WHERE status = 'Pendente';
 
 -- Excluir projeto por data de conclusão
 DELETE FROM Projeto WHERE dataFim = '?';
 
 -- Excluir registro por Id
-DELETE FROM tabela WHERE tabelaId = ?;
+DELETE FROM Projeto WHERE projetoId = ?;
 DELETE FROM Tarefa WHERE tarefaId IN (?);
 
 -- Excluir tarefa por projeto associado

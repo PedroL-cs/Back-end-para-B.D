@@ -66,7 +66,6 @@ public class DatabaseAdicao {
 
     }
 
-
     public static void adicionarColuna(Connection connection, String tabelaNome, String nomeColuna, String tipoColuna, int tamanhoColuna, boolean autoIncremento, String chaveTipo, String tabelaReferencia, String colunaReferencia) {
         StringBuilder query = new StringBuilder("ALTER TABLE " + tabelaNome + " ADD " + nomeColuna + " " + tipoColuna);
 

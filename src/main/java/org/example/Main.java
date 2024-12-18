@@ -191,6 +191,11 @@ public class Main {
                             System.out.println("Informe o Id do projeto que será usado como condição de consulta");
                             int projetoId = dado.nextInt(); dado.nextLine();
 
+                            if (DatabaseConsulta.findProjectById(connection, projetoId).equalsIgnoreCase("Nome não encontrado")) {
+                                System.out.println("O Id do projeto fornecido não existe no banco de dados!");
+                                break;
+                            }
+
                             System.out.println("O que você deseja fazer com as tarefas associadas à este projeto");
                             System.out.println("1. Consultar todas as tarefas");
                             System.out.println("2. Consultar tarefas concluídas");
@@ -390,6 +395,11 @@ public class Main {
             System.out.println("Por favor, informe o id do projeto que deseja atualizar");
             int projetoId = dado.nextInt(); dado.nextLine();
 
+            if (DatabaseConsulta.findProjectById(connection, projetoId).equalsIgnoreCase("Nome não encontrado")) {
+                System.out.println("O Id do projeto fornecido não existe no banco de dados!");
+                return;
+            }
+
             System.out.println("O que você deseja fazer com este projeto?");
             System.out.println("1. Alterar nome");
             System.out.println("2. Alterar descrição");
@@ -519,9 +529,22 @@ public class Main {
             System.out.println("Por favor, escolha o projeto associado à tarefa que você deseja atualizar");
             int projetoId = dado.nextInt(); dado.nextLine();
 
-            DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", projetoId);
+            if (DatabaseConsulta.findProjectById(connection, projetoId).equalsIgnoreCase("Nome não encontrado")) {
+                System.out.println("O Id do projeto fornecido não existe no banco de dados!");
+                return;
+            }
+
+            if (!DatabaseConsulta.consultarTabelaPorProjeto(connection, "Tarefa", projetoId)) {
+                return;
+            }
+
             System.out.println("Por favor, informe o id da tarefa que deseja atualizar");
             int tarefaId = dado.nextInt(); dado.nextLine();
+
+            if (DatabaseConsulta.findTaskById(connection, projetoId).equalsIgnoreCase("Nome não encontrado")) {
+                System.out.println("O Id da tarefa fornecido não existe no banco de dados!");
+                return;
+            }
 
             System.out.println("O que você deseja fazer com esta tarefa?");
             System.out.println("1. Alterar nome");
@@ -729,6 +752,11 @@ public class Main {
                             DatabaseConsulta.consultarColuna(connection, "Projeto", "nomeProjeto");
                             System.out.println("Informe o Id do projeto desejado");
                             int projetoId = dado.nextInt(); dado.nextLine();
+
+                            if (DatabaseConsulta.findProjectById(connection, projetoId).equalsIgnoreCase("Nome não encontrado")) {
+                                System.out.println("O Id do projeto fornecido não existe no banco de dados!");
+                                break;
+                            }
 
                             System.out.println("O que deseja fazer com as tarefas associadas à este projeto?");
                             System.out.println("1. Excluir as tarefas concluídas");
